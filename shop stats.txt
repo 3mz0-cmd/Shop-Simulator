@@ -1,0 +1,6 @@
+money:100
+total_revenue:0
+total_profit:0
+experience:0
+reputation:100
+level:1

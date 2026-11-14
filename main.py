@@ -122,6 +122,14 @@ def tutorial():
     print("4. Maintain Your Reputation")
     print("- Serving customers increases reputation.\n- Rejecting customers or running out of stock decreases it.\n- Higher reputation means customers arrive faster!")
 
+def level_up():
+    xp_needed = 100 + (shop_stats["experience"] + 25)
+
+    if shop_stats["experience"] >= xp_needed:
+        shop_stats["level"] += 1
+        shop_stats["experience"] -= xp_needed
+        print(f"Your store has leveled up to level {shop_stats['level']}!")
+
 def save_stats():
     with open ("shop stats.txt" , "w") as file:
         for stats, value in shop_stats.items():
@@ -173,10 +181,12 @@ def main():
         elif option == "3":
             buy_stock()
             save_stock()
+            level_up()
         elif option == "4":
             open_shop()
             save_stats()
             save_stock()
+            level_up()
         elif option == "5":
             tutorial()
         elif option == "6":

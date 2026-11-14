@@ -1,9 +1,17 @@
 import random
 import time
-shop_stats = {"money": 100 , "total_revenue": 0 , "total_profit": 0 , "experience": 0 , "reputation": 50, "level": 1}
-shop_inventory = {"apple" : {"stock": 0 , "cost": 1 , "price": 2},
-                "banana" : {"stock": 0, "cost": 3 , "price": 5},
-                "orange" : {"stock": 0 , "cost": 1 , "price": 2}
+shop_stats = {"money": 100 , "total_revenue": 0 , "total_profit": 0 , "experience": 0 , "reputation": 100, "level": 1}
+shop_inventory = {"apple" : {"stock": 0 , "cost": 1 , "price": 2 , "level" : 1},
+                "banana" : {"stock": 0, "cost": 2 , "price": 3, "level" : 1},
+                "orange" : {"stock": 0 , "cost": 1 , "price": 2, "level" : 1},
+                "pear" : {"stock": 0 , "cost": 1 , "price": 3, "level" : 2},
+                "grape" : {"stock": 0 , "cost": 4 , "price": 7, "level" : 2},
+                "watermelon" : {"stock": 0 , "cost": 5 , "price": 10, "level" : 3},
+                "peach" : {"stock": 0 , "cost": 3 , "price": 6, "level" : 3},
+                "mango" : {"stock": 0 , "cost": 3 , "price": 8, "level" : 4},
+                "strawberry" : {"stock": 0 , "cost": 2 , "price": 5, "level" : 5},
+                "blueberry" : {"stock": 0 , "cost": 2 , "price": 5, "level" : 5},
+                "rasberry" : {"stock": 0 , "cost": 2 , "price": 6, "level" : 5}
                 }
 
 
@@ -26,26 +34,35 @@ def view_shop_stats():
         print(f"{stat.title()}: {value}")
     print("Successfully viewed your shop's stats!\n")
 
-def buy_stock():
+def stock_menu():
     print("===Stock Shop===")
-    print("1. Apple | Cost: RM 1 ")
-    print("2. Banana | Cost: RM 3 ")
-    print("3. Orange | Cost: RM 1 ")
+    for index, (product , detail) in enumerate(shop_inventory.items(), 1):
+        if shop_stats["level"] >= detail["level"]:
+            print(f"{index}. {product.title()} | Cost: RM{detail["cost"]}")
 
-    option = input("What would you like to buy?(1-3): ")
+def buy_stock():
+    stock_menu()
 
-    if option == "1" or option == "2" or option == "3":
+    unlocked_products = []
+    for product , detail in shop_inventory.items():
+        if shop_stats["level"] >= detail["level"]:
+            unlocked_products.append(product)
+
+    option = input(f"What would you like to buy?: ")
+
+    if option.isdigit() and 1 <= int(option) <= len(unlocked_products):
         products = list(shop_inventory.keys())
         product = products[int(option) - 1]
         try:
-            amount = int(input(f"How many {product.title()} would you like to buy? "))
+            amount = int(input(f"How many {product.title()}s would you like to buy? "))
             if amount <= 0:
                 print("Invalid amount!")
             elif shop_stats["money"] >= shop_inventory[product]["cost"] * amount:
                 shop_stats["money"] -= shop_inventory[product]["cost"] * amount
                 shop_inventory [product]["stock"] += amount
                 shop_stats ["experience"] += 1 * amount
-                print(f"Successfully bought {amount} {product.title()}\n")
+                suffix = "" if amount == 1 else "s"
+                print(f"Successfully bought {amount} {product.title()}{suffix}\n")
             else:
                 print("You don't have enough money! Go earn some money!\n")
 
@@ -78,7 +95,12 @@ def open_shop():
 
         print("A customer entered your shop!")
 
-        product = random.choice(list(shop_inventory.keys()))
+        unlocked_product = []
+        for product , details in shop_inventory.items():
+            if shop_stats["level"] == details["level"]:
+                unlocked_product.append(product)
+
+        product = random.choice(unlocked_product)
         amount = random.randint(1,15)
         suffix = "" if amount == 1 else "s"
         print(f"This customer wants {amount} {product.title()}{suffix}")
@@ -109,6 +131,8 @@ def open_shop():
             break
         else:
             print("Invalid option!")
+
+open_shop()
 
 def tutorial():
     print("===== TUTORIAL =====")
@@ -197,4 +221,3 @@ def main():
         else:
             print("Invalid option!\n")
 
-main()

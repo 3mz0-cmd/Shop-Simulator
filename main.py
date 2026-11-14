@@ -35,10 +35,12 @@ def view_shop_stats():
     print("Successfully viewed your shop's stats!\n")
 
 def stock_menu():
+    index = 1
     print("===Stock Shop===")
-    for index, (product , detail) in enumerate(shop_inventory.items(), 1):
-        if shop_stats["level"] >= detail["level"]:
-            print(f"{index}. {product.title()} | Cost: RM{detail["cost"]}")
+    for product , details in shop_inventory.items():
+        if shop_stats["level"] >= details["level"]:
+            print(f"{str(index)}. {product.title()} | Cost: RM{detail["cost"]}")
+            index += 1
 
 def buy_stock():
     stock_menu()
@@ -52,7 +54,7 @@ def buy_stock():
 
     if option.isdigit() and 1 <= int(option) <= len(unlocked_products):
         products = list(shop_inventory.keys())
-        product = products[int(option) - 1]
+        product = unlocked_products[int(option) - 1]
         try:
             amount = int(input(f"How many {product.title()}s would you like to buy? "))
             if amount <= 0:
@@ -97,7 +99,7 @@ def open_shop():
 
         unlocked_product = []
         for product , details in shop_inventory.items():
-            if shop_stats["level"] == details["level"]:
+            if shop_stats["level"] >= details["level"]:
                 unlocked_product.append(product)
 
         product = random.choice(unlocked_product)
@@ -132,8 +134,6 @@ def open_shop():
         else:
             print("Invalid option!")
 
-open_shop()
-
 def tutorial():
     print("===== TUTORIAL =====")
     print("Welcome, shop owner! Your goal is to build a successful shop by earning money and keeping your customers happy.")
@@ -147,7 +147,7 @@ def tutorial():
     print("- Serving customers increases reputation.\n- Rejecting customers or running out of stock decreases it.\n- Higher reputation means customers arrive faster!")
 
 def level_up():
-    xp_needed = 100 + (shop_stats["experience"] + 25)
+    xp_needed = 75 + (shop_stats["level"] * 25)
 
     if shop_stats["experience"] >= xp_needed:
         shop_stats["level"] += 1
@@ -174,7 +174,7 @@ def load_stats():
 def save_stock():
     with open("shop stocks.txt" , "w") as file:
         for product , details in shop_inventory.items():
-            file.write(product + "|" + str(details["stock"]) + "|" + str(details["cost"]) + "|" + str(details["price"]) + "\n")
+            file.write(product + "|" + str(details["stock"]) + "|" + str(details["cost"]) + "|" + str(details["price"]) + "|" + str(details["level"]) + "\n")
 
 def load_stock():
     try:
@@ -185,8 +185,9 @@ def load_stock():
                 stock = parts [1]
                 cost = parts [2]
                 price = parts [3]
+                level = parts [4]
 
-                shop_inventory[product] = {"stock": int(stock), "cost" : int(cost) , "price": int(price)}
+                shop_inventory[product] = {"stock": int(stock), "cost" : int(cost) , "price": int(price) , "level": int(level)}
     except FileNotFoundError:
         pass
 
